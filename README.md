@@ -1,4 +1,4 @@
-# RailsCasts Episode #405: AngularJS
+# RailsCasts Episode #405 changed to use Ember.js
 
 http://railscasts.com/episodes/405-angularjs
 
