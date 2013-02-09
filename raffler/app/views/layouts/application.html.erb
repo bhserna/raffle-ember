@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="Raffler">
+<html>
 <head>
   <title>Raffler</title>
   <%= stylesheet_link_tag    "application", :media => "all" %>
@@ -7,8 +7,6 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<div id="container">
-<%= yield %>
-</div>
 </body>
+  <%= yield %>
 </html>

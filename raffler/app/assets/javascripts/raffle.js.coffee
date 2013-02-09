@@ -1,24 +1,35 @@
-app = angular.module("Raffler", ["ngResource"])
+window.App = Ember.Application.create()
 
-app.factory "Entry", ["$resource", ($resource) ->
-  $resource("/entries/:id", {id: "@id"}, {update: {method: "PUT"}})
-]
+App.IndexRoute = Ember.Route.extend
+  setupController: ->
+    @controllerFor('entries').set 'content', App.Entry.find()
+    @controllerFor('new_entry').set 'content', name: ''
 
-@RaffleCtrl = ["$scope", "Entry", ($scope, Entry) ->
-  $scope.entries = Entry.query()
-  
-  $scope.addEntry = ->
-    entry = Entry.save($scope.newEntry)
-    $scope.entries.push(entry)
-    $scope.newEntry = {}
-    
-  $scope.drawWinner = ->
-    pool = []
-    angular.forEach $scope.entries, (entry) ->
-      pool.push(entry) if !entry.winner
+App.IndexController = Ember.ObjectController.extend
+  drawWinner: ->
+    entries = @controllerFor('entries').get('content')
+    entries.setEach 'isLastWinner', false
+    pool = entries.filterProperty 'winner', false
+
     if pool.length > 0
       entry = pool[Math.floor(Math.random()*pool.length)]
-      entry.winner = true
-      entry.$update()
-      $scope.lastWinner = entry
-]
+      entry.set 'winner', true
+      entry.set 'isLastWinner', true
+      @store.commit()
+
+App.EntriesController = Ember.ArrayController.extend()
+
+App.NewEntryController = Ember.ObjectController.extend
+  add: ->
+    App.Entry.createRecord name: @get 'name'
+    @store.commit()
+    @set 'content', name: ''
+
+App.Store = DS.Store.extend
+  revision: 11
+
+DS.RESTAdapter.configure "plurals", entry: "entries"
+
+App.Entry = DS.Model.extend
+  name: DS.attr('string')
+  winner: DS.attr('boolean')

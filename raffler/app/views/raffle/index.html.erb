@@ -1,17 +1,36 @@
+<script type="text/x-handlebars">
+  <div id="container">
+    {{outlet}}
+  </div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="index">
 <h1>Raffler</h1>
 
-<div ng-controller="RaffleCtrl">
-  <form ng-submit="addEntry()">
-    <input type="text" ng-model="newEntry.name">
-    <input type="submit" value="Add">
-  </form>
+<div>
+  {{ render "new_entry" }}
+  {{ render "entries" }}
 
-  <ul>
-    <li ng-repeat="entry in entries">
-      {{entry.name}}
-      <span ng-show="entry.winner" ng-class="{highlight: entry == lastWinner}" class="winner">WINNER</span>
-    </li>
-  </ul>
-  
-  <button ng-click="drawWinner()">Draw Winner</button>
+  <button {{ action "drawWinner" }}>Draw Winner</button>
 </div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="new_entry">
+  <form>
+    {{view Ember.TextField valueBinding="name"}}
+    <input type="submit" value="Add" {{ action "add" }}/>
+  </form>
+</script>
+
+<script type="text/x-handlebars" data-template-name="entries">
+  <ul>
+    {{#each entry in controller }}
+    <li>{{ entry.name }}
+      {{#if entry.winner }}
+      <span {{ bindAttr class=":winner entry.isLastWinner:highlight" }}>WINNER</span>
+      {{/if}}
+    </li>
+    {{/each}}
+  </ul>
+</script>
+
